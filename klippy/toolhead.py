@@ -254,6 +254,9 @@ class ToolHead:
         # Create kinematics class
         gcode = self.printer.lookup_object('gcode')
         self.Coord = gcode.Coord
+# Modification for the AB abstract space
+        self.AB_Coord = gcode.AB_Coord
+#---------------------------------------
         self.extruder = kinematics.extruder.DummyExtruder(self.printer)
         kin_name = config.get('kinematics')
         try:

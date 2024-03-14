@@ -10,6 +10,10 @@ class CommandError(Exception):
 
 Coord = collections.namedtuple('Coord', ('x', 'y', 'z', 'e'))
 
+# Modification for the AB abstract space
+AB_Coord = collections.namedtuple('AB_Coord', ('a', 'b'))
+#--------------------------------------------
+
 class GCodeCommand:
     error = CommandError
     def __init__(self, gcode, command, commandline, params, need_ack):
