@@ -325,12 +325,15 @@ class PrinterHoming:
         kin = self.printer.lookup_object('toolhead').get_kinematics()
         try:
             kin.home(homing_state)
+            gcmd.respond_info('and here I hope?')
         except self.printer.command_error:
             if self.printer.is_shutdown():
                 raise self.printer.command_error(
                     "Homing failed due to printer shutdown")
             self.printer.lookup_object('stepper_enable').motor_off()
             raise
+
+        gcmd.respond_info('end of function')
 
 def load_config(config):
     return PrinterHoming(config)
