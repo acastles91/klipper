@@ -64,6 +64,7 @@ class Barba:
         homing_state.home_rails_barba([rail], forcepos, homepos)
     def home(self, homing_state):
         # Each axis is homed independently and in order
+        logging.info("home en barba")
         for axis in homing_state.get_axes():
             self.home_axis(homing_state, axis, self.toolhead1_motors[axis])
     def _motor_off(self, print_time):
