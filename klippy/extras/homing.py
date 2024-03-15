@@ -323,6 +323,7 @@ class PrinterHoming:
         homing_state = Homing(self.printer)
         homing_state.set_axes(axes)
         kin = self.printer.lookup_object('toolhead').get_kinematics()
+        gcmd.respond_info('what about here')
         try:
             kin.home(homing_state)
             gcmd.respond_info('and here I hope?')
