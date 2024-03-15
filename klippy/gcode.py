@@ -93,6 +93,7 @@ class GCodeCommand:
 class GCodeDispatch:
     error = CommandError
     Coord = Coord
+    AB_Coord = AB_Coord
     def __init__(self, printer):
         self.printer = printer
         self.is_fileinput = not not printer.get_start_args().get("debuginput")
