@@ -323,10 +323,10 @@ class PrinterHoming:
         homing_state = Homing(self.printer)
         homing_state.set_axes(axes)
         kin = self.printer.lookup_object('toolhead').get_kinematics()
-        gcmd.respond_info('set_axes = ' + str(len(axes)))
-        gcmd.respond_info("kin = " +  str(kin))
+        logging.info('log set_axes = ' + str(len(axes)))
+        logging.info("log kin = " +  str(kin))
         try:
-            gcmd.respond_info('and here I hope?')
+            logging.info('and here I hope, in the log?')
             kin.home(homing_state) ##This is where the failure happens
             gcmd.respond_info('did this go through?')
         except self.printer.command_error:
