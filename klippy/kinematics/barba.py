@@ -56,6 +56,8 @@ class Barba:
         homepos = [None, None, None, None]
         homepos[axis] = hi.position_endstop
         forcepos = list(homepos)
+
+        logging.info("this still working?")
         if hi.positive_dir:
             forcepos[axis] -= 1.5 * (hi.position_endstop - position_min)
         else:
