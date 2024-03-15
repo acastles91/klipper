@@ -85,6 +85,7 @@ class CartKinematics:
     def home(self, homing_state):
         # Each axis is homed independently and in order
         for axis in homing_state.get_axes():
+            logging.info("cartesian axes " + str(axis))
             if self.dc_module is not None and axis == self.dual_carriage_axis:
                 self.dc_module.home(homing_state)
             else:
