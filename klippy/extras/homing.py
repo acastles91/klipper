@@ -308,6 +308,8 @@ class PrinterHoming:
                 "Probe triggered prior to movement")
         return epos
     def cmd_G28(self, gcmd):
+
+        gcmd.respond_info('Here we are')
         logging.info("Here, G28")
         # Move to origin
         axes = []
