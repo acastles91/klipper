@@ -310,11 +310,13 @@ class PrinterHoming:
     def cmd_G28(self, gcmd):
         # Move to origin
         axes = []
-        for pos, axis in enumerate('XYZ'):
+        ## Altering for Barba ## for pos, axis in enumerate('XYZ'):
+        for pos, axis in enumerate('AB'):
             if gcmd.get(axis, None) is not None:
                 axes.append(pos)
         if not axes:
-            axes = [0, 1, 2]
+            ## axes = [0, 1, 2]
+            axes = [0, 1]
         homing_state = Homing(self.printer)
         homing_state.set_axes(axes)
         kin = self.printer.lookup_object('toolhead').get_kinematics()
