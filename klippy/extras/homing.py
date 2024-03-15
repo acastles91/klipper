@@ -224,6 +224,7 @@ class Homing:
 
     def home_rails_barba(self, rails, forcepos, movepos):
             # Notify of upcoming homing operation
+            logging.info("homing_rails_barba begins")
             self.printer.send_event("homing:home_rails_begin", self, rails)
             # Alter kinematics class to think printer is at forcepos
             homing_axes = [axis for axis in range(2) if forcepos[axis] is not None]
@@ -235,6 +236,7 @@ class Homing:
             hi = rails[0].get_homing_info()
             hmove = HomingMove(self.printer, endstops)
             hmove.homing_move(homepos, hi.speed)
+            logging.info("homing_rails_barba continues")
             # Perform second home
             if hi.retract_dist:
                 # Retract

@@ -49,6 +49,7 @@ class Barba:
                 self.limits[i] = rail.get_range()
     def home_axis(self, homing_state, axis, rail):
         # Determine movement
+        logging.info("homing_axis from kinematics")
         position_min, position_max = rail.get_range()
         # hi = homing info
         hi = rail.get_homing_info()
