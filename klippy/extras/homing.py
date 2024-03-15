@@ -312,14 +312,14 @@ class PrinterHoming:
         # Move to origin
         axes = []
         ## Altering for Barba ## for pos, axis in enumerate('XYZ'):
-        for pos, axis in enumerate('AB'):
+        for pos, axis in enumerate('XYZ'):
             gcmd.respond_info('still here')
             if gcmd.get(axis, None) is not None:
                 axes.append(pos)
         if not axes:
             gcmd.respond_info('and here')
-            ## axes = [0, 1, 2]
-            axes = [0, 1]
+            axes = [0, 1, 2]
+            ##axes = [0, 1]
         homing_state = Homing(self.printer)
         homing_state.set_axes(axes)
         kin = self.printer.lookup_object('toolhead').get_kinematics()
