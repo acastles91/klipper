@@ -326,8 +326,8 @@ class PrinterHoming:
         gcmd.respond_info('what about here ')
         gcmd.respond_info('kin = "%s"' % (kin))
         try:
-            kin.home(homing_state)
             gcmd.respond_info('and here I hope?')
+            kin.home(homing_state)
         except self.printer.command_error:
             if self.printer.is_shutdown():
                 raise self.printer.command_error(
