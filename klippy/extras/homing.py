@@ -308,6 +308,7 @@ class PrinterHoming:
                 "Probe triggered prior to movement")
         return epos
     def cmd_G28(self, gcmd):
+        logging.info("Here, G28")
         # Move to origin
         axes = []
         ## Altering for Barba ## for pos, axis in enumerate('XYZ'):
