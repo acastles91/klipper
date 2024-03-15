@@ -60,7 +60,7 @@ class Barba:
         else:
             forcepos[axis] += 1.5 * (position_max - hi.position_endstop)
         # Perform homing
-        homing_state.home_rails([rail], forcepos, homepos)
+        homing_state.home_rails_barba([rail], forcepos, homepos)
     def home(self, homing_state):
         # Each axis is homed independently and in order
         for axis in homing_state.get_axes():
