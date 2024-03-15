@@ -312,7 +312,7 @@ class PrinterHoming:
         # Move to origin
         axes = []
         ## Altering for Barba ## for pos, axis in enumerate('XYZ'):
-        for pos, axis in enumerate('AB'):
+        for pos, axis in enumerate('XY'):
             gcmd.respond_info('still here')
             if gcmd.get(axis, None) is not None:
                 axes.append(pos)
