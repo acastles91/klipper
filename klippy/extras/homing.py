@@ -308,16 +308,16 @@ class PrinterHoming:
                 "Probe triggered prior to movement")
         return epos
     def cmd_G28(self, gcmd):
-
         gcmd.respond_info('Here we are')
-        logging.info("Here, G28")
         # Move to origin
         axes = []
         ## Altering for Barba ## for pos, axis in enumerate('XYZ'):
         for pos, axis in enumerate('AB'):
+            gcmd.respond_info('still here')
             if gcmd.get(axis, None) is not None:
                 axes.append(pos)
         if not axes:
+            gcmd.respond_info('and here')
             ## axes = [0, 1, 2]
             axes = [0, 1]
         homing_state = Homing(self.printer)
