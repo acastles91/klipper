@@ -259,9 +259,13 @@ class ToolHead:
 #---------------------------------------
         self.extruder = kinematics.extruder.DummyExtruder(self.printer)
         kin_name = config.get('kinematics')
+        logging.info('ok')
         try:
+            logging.info('Here we are again')
             mod = importlib.import_module('kinematics.' + kin_name)
             self.kin = mod.load_kinematics(self, config)
+            logging.info('i hope it works')
+
         except config.error as e:
             raise
         except self.printer.lookup_object('pins').error as e:
