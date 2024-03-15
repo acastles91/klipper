@@ -307,7 +307,7 @@ class PrinterHoming:
             raise self.printer.command_error(
                 "Probe triggered prior to movement")
         return epos
-    def cmd_G28(self, gcmd):
+    def cmd_G28(self, gcmd): ##This is why cartesian doesn't work
         gcmd.respond_info('Here we are')
         # Move to origin
         axes = []
@@ -323,11 +323,11 @@ class PrinterHoming:
         homing_state = Homing(self.printer)
         homing_state.set_axes(axes)
         kin = self.printer.lookup_object('toolhead').get_kinematics()
-        gcmd.respond_info('what about here ')
+        gcmd.respond_info('set_axes = ' + str(len(axes)))
         gcmd.respond_info('kin = "%s"' % (kin))
         try:
             gcmd.respond_info('and here I hope?')
-            kin.home(homing_state)
+            kin.home(homing_state) ##This is where the failure happens
             gcmd.respond_info('did this go through?')
         except self.printer.command_error:
             if self.printer.is_shutdown():
