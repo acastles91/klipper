@@ -325,6 +325,7 @@ class PrinterHoming:
         kin = self.printer.lookup_object('toolhead').get_kinematics()
         gcmd.respond_info('what about here ')
         gcmd.respond_info('kin = "%s"' % (kin))
+        logging.info('Is this working?')
         try:
             gcmd.respond_info('and here I hope?')
             kin.home(homing_state)
