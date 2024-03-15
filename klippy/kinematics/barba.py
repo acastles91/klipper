@@ -66,7 +66,7 @@ class Barba:
         # Each axis is homed independently and in order
         logging.info("home en barba")
         for axis in homing_state.get_axes():
-            logging.info("axes " + axis)
+            logging.info("axes " str(axis))
             self.home_axis(homing_state, axis, self.toolhead1_motors[axis])
     def _motor_off(self, print_time):
         self.limits = [(1.0, -1.0)] * 2
