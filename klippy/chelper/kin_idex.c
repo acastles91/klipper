@@ -3,7 +3,7 @@
 // Copyright (C) 2023  Dmitry Butyugin <dmbutyugin@google.com>
 //
 // This file may be distributed under the terms of the GNU GPLv3 license.
-
+#ifdef XYZ_COORDSPACE
 #include <stddef.h> // offsetof
 #include <stdlib.h> // malloc
 #include <string.h> // memset

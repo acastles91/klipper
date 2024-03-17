@@ -3,7 +3,7 @@
 // Copyright (C) 2018-2019  Kevin O'Connor <kevin@koconnor.net>
 //
 // This file may be distributed under the terms of the GNU GPLv3 license.
-
+#ifdef XYZ_COORDSPACE
 #include <math.h> // sqrt
 #include <stddef.h> // offsetof
 #include <stdlib.h> // malloc
@@ -40,3 +40,4 @@ winch_stepper_alloc(double anchor_x, double anchor_y, double anchor_z)
     hs->sk.active_flags = AF_X | AF_Y | AF_Z;
     return &hs->sk;
 }
+#endif

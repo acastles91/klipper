@@ -3,7 +3,7 @@
 // Copyright (C) 2020  Maks Zolin <mzolin@vorondesign.com>
 //
 // This file may be distributed under the terms of the GNU GPLv3 license.
-
+#ifdef XYZ_COORDSPACE
 #include <stdlib.h> // malloc
 #include <string.h> // memset
 #include "compiler.h" // __visible
@@ -38,3 +38,5 @@ corexz_stepper_alloc(char type)
     sk->active_flags = AF_X | AF_Z;
     return sk;
 }
+
+#endif

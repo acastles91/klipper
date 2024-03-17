@@ -3,6 +3,7 @@
 // Copyright (C) 2018-2019  Kevin O'Connor <kevin@koconnor.net>
 //
 // This file may be distributed under the terms of the GNU GPLv3 license.
+#ifdef XYZ_COORDSPACE
 
 #include <stdlib.h> // malloc
 #include <string.h> // memset
@@ -49,3 +50,5 @@ cartesian_stepper_alloc(char axis)
     }
     return sk;
 }
+
+#endif

@@ -3,7 +3,7 @@
 // Copyright (C) 2022  Fabrice Gallet <tircown@gmail.com>
 //
 // This file may be distributed under the terms of the GNU GPLv3 license.
-
+#ifdef XYZ_COORDSPACE
 #include <math.h> // sqrt
 #include <stddef.h> // offsetof
 #include <stdlib.h> // malloc
@@ -39,3 +39,4 @@ deltesian_stepper_alloc(double arm2, double arm_x)
     ds->sk.active_flags = AF_X | AF_Z;
     return &ds->sk;
 }
+#endif

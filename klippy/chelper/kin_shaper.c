@@ -4,7 +4,7 @@
 // Copyright (C) 2020  Dmitry Butyugin <dmbutyugin@google.com>
 //
 // This file may be distributed under the terms of the GNU GPLv3 license.
-
+#ifdef XYZ_COORDSPACE
 #include <math.h> // sqrt, exp
 #include <stddef.h> // offsetof
 #include <stdlib.h> // malloc
@@ -228,3 +228,4 @@ input_shaper_alloc(void)
     is->m.move_t = 2. * DUMMY_T;
     return &is->sk;
 }
+#endif

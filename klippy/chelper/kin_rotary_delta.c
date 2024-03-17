@@ -3,7 +3,7 @@
 // Copyright (C) 2019  Kevin O'Connor <kevin@koconnor.net>
 //
 // This file may be distributed under the terms of the GNU GPLv3 license.
-
+#ifdef XYZ_COORDSPACE
 #include <math.h> // sqrt
 #include <stddef.h> // offsetof
 #include <stdlib.h> // malloc
@@ -71,3 +71,4 @@ rotary_delta_stepper_alloc(double shoulder_radius, double shoulder_height
     rs->sk.active_flags = AF_X | AF_Y | AF_Z;
     return &rs->sk;
 }
+#endif
