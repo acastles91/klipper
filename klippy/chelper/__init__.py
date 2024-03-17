@@ -6,6 +6,7 @@
 import os, logging
 import cffi
 
+from coordinate_space_config import ab_coord_space, xyz_coord_space
 
 ######################################################################
 # c_helper.so compiling
@@ -63,106 +64,153 @@ defs_stepcompress = """
     int steppersync_flush(struct steppersync *ss, uint64_t move_clock
         , uint64_t clear_history_clock);
 """
+if xyz_coord_space:
+    defs_itersolve = """
+        int32_t itersolve_generate_steps(struct stepper_kinematics *sk
+            , double flush_time);
+        double itersolve_check_active(struct stepper_kinematics *sk
+            , double flush_time);
+        int32_t itersolve_is_active_axis(struct stepper_kinematics *sk, char axis);
+        void itersolve_set_trapq(struct stepper_kinematics *sk, struct trapq *tq);
+        void itersolve_set_stepcompress(struct stepper_kinematics *sk
+            , struct stepcompress *sc, double step_dist);
+        double itersolve_calc_position_from_coord(struct stepper_kinematics *sk
+            , double x, double y, double z);
+        void itersolve_set_position(struct stepper_kinematics *sk
+            , double x, double y, double z);
+        double itersolve_get_commanded_pos(struct stepper_kinematics *sk);
+    """
 
-defs_itersolve = """
-    int32_t itersolve_generate_steps(struct stepper_kinematics *sk
-        , double flush_time);
-    double itersolve_check_active(struct stepper_kinematics *sk
-        , double flush_time);
-    int32_t itersolve_is_active_axis(struct stepper_kinematics *sk, char axis);
-    void itersolve_set_trapq(struct stepper_kinematics *sk, struct trapq *tq);
-    void itersolve_set_stepcompress(struct stepper_kinematics *sk
-        , struct stepcompress *sc, double step_dist);
-    double itersolve_calc_position_from_coord(struct stepper_kinematics *sk
-        , double x, double y, double z);
-    void itersolve_set_position(struct stepper_kinematics *sk
-        , double x, double y, double z);
-    double itersolve_get_commanded_pos(struct stepper_kinematics *sk);
-"""
 
-defs_trapq = """
-    struct pull_move {
-        double print_time, move_t;
-        double start_v, accel;
-        double start_x, start_y, start_z;
-        double x_r, y_r, z_r;
-    };
+    defs_trapq = """
+        struct pull_move {
+            double print_time, move_t;
+            double start_v, accel;
+            double start_x, start_y, start_z;
+            double x_r, y_r, z_r;
+        };
 
-    struct trapq *trapq_alloc(void);
-    void trapq_free(struct trapq *tq);
-    void trapq_append(struct trapq *tq, double print_time
-        , double accel_t, double cruise_t, double decel_t
-        , double start_pos_x, double start_pos_y, double start_pos_z
-        , double axes_r_x, double axes_r_y, double axes_r_z
-        , double start_v, double cruise_v, double accel);
-    void trapq_finalize_moves(struct trapq *tq, double print_time
-        , double clear_history_time);
-    void trapq_set_position(struct trapq *tq, double print_time
-        , double pos_x, double pos_y, double pos_z);
-    int trapq_extract_old(struct trapq *tq, struct pull_move *p, int max
-        , double start_time, double end_time);
-"""
+        struct trapq *trapq_alloc(void);
+        void trapq_free(struct trapq *tq);
+        void trapq_append(struct trapq *tq, double print_time
+            , double accel_t, double cruise_t, double decel_t
+            , double start_pos_x, double start_pos_y, double start_pos_z
+            , double axes_r_x, double axes_r_y, double axes_r_z
+            , double start_v, double cruise_v, double accel);
+        void trapq_finalize_moves(struct trapq *tq, double print_time
+            , double clear_history_time);
+        void trapq_set_position(struct trapq *tq, double print_time
+            , double pos_x, double pos_y, double pos_z);
+        int trapq_extract_old(struct trapq *tq, struct pull_move *p, int max
+            , double start_time, double end_time);
+    """
 
-defs_kin_cartesian = """
-    struct stepper_kinematics *cartesian_stepper_alloc(char axis);
-"""
+    defs_kin_cartesian = """
+        struct stepper_kinematics *cartesian_stepper_alloc(char axis);
+    """
 
-defs_kin_corexy = """
-    struct stepper_kinematics *corexy_stepper_alloc(char type);
-"""
+    defs_kin_corexy = """
+        struct stepper_kinematics *corexy_stepper_alloc(char type);
+    """
 
-defs_kin_corexz = """
-    struct stepper_kinematics *corexz_stepper_alloc(char type);
-"""
+    defs_kin_corexz = """
+        struct stepper_kinematics *corexz_stepper_alloc(char type);
+    """
 
-defs_kin_delta = """
-    struct stepper_kinematics *delta_stepper_alloc(double arm2
-        , double tower_x, double tower_y);
-"""
+    defs_kin_delta = """
+        struct stepper_kinematics *delta_stepper_alloc(double arm2
+            , double tower_x, double tower_y);
+    """
 
-defs_kin_deltesian = """
-    struct stepper_kinematics *deltesian_stepper_alloc(double arm2
-        , double arm_x);
-"""
+    defs_kin_deltesian = """
+        struct stepper_kinematics *deltesian_stepper_alloc(double arm2
+            , double arm_x);
+    """
 
-defs_kin_polar = """
-    struct stepper_kinematics *polar_stepper_alloc(char type);
-"""
+    defs_kin_polar = """
+        struct stepper_kinematics *polar_stepper_alloc(char type);
+    """
 
-defs_kin_rotary_delta = """
-    struct stepper_kinematics *rotary_delta_stepper_alloc(
-        double shoulder_radius, double shoulder_height
-        , double angle, double upper_arm, double lower_arm);
-"""
+    defs_kin_rotary_delta = """
+        struct stepper_kinematics *rotary_delta_stepper_alloc(
+            double shoulder_radius, double shoulder_height
+            , double angle, double upper_arm, double lower_arm);
+    """
 
-defs_kin_winch = """
-    struct stepper_kinematics *winch_stepper_alloc(double anchor_x
-        , double anchor_y, double anchor_z);
-"""
+    defs_kin_winch = """
+        struct stepper_kinematics *winch_stepper_alloc(double anchor_x
+            , double anchor_y, double anchor_z);
+    """
 
-defs_kin_extruder = """
-    struct stepper_kinematics *extruder_stepper_alloc(void);
-    void extruder_set_pressure_advance(struct stepper_kinematics *sk
-        , double pressure_advance, double smooth_time);
-"""
+    defs_kin_extruder = """
+        struct stepper_kinematics *extruder_stepper_alloc(void);
+        void extruder_set_pressure_advance(struct stepper_kinematics *sk
+            , double pressure_advance, double smooth_time);
+    """
 
-defs_kin_shaper = """
-    double input_shaper_get_step_generation_window(
-        struct stepper_kinematics *sk);
-    int input_shaper_set_shaper_params(struct stepper_kinematics *sk, char axis
-        , int n, double a[], double t[]);
-    int input_shaper_set_sk(struct stepper_kinematics *sk
-        , struct stepper_kinematics *orig_sk);
-    struct stepper_kinematics * input_shaper_alloc(void);
-"""
+    defs_kin_shaper = """
+        double input_shaper_get_step_generation_window(
+            struct stepper_kinematics *sk);
+        int input_shaper_set_shaper_params(struct stepper_kinematics *sk, char axis
+            , int n, double a[], double t[]);
+        int input_shaper_set_sk(struct stepper_kinematics *sk
+            , struct stepper_kinematics *orig_sk);
+        struct stepper_kinematics * input_shaper_alloc(void);
+    """
 
-defs_kin_idex = """
-    void dual_carriage_set_sk(struct stepper_kinematics *sk
-        , struct stepper_kinematics *orig_sk);
-    int dual_carriage_set_transform(struct stepper_kinematics *sk
-        , char axis, double scale, double offs);
-    struct stepper_kinematics * dual_carriage_alloc(void);
-"""
+    defs_kin_idex = """
+        void dual_carriage_set_sk(struct stepper_kinematics *sk
+            , struct stepper_kinematics *orig_sk);
+        int dual_carriage_set_transform(struct stepper_kinematics *sk
+            , char axis, double scale, double offs);
+        struct stepper_kinematics * dual_carriage_alloc(void);
+    """
+if ab_coord_space:
+    
+    defs_itersolve = """
+        int32_t itersolve_generate_steps(struct stepper_kinematics *sk
+            , double flush_time);
+        double itersolve_check_active(struct stepper_kinematics *sk
+            , double flush_time);
+        int32_t itersolve_is_active_axis(struct stepper_kinematics *sk, char axis);
+        void itersolve_set_trapq(struct stepper_kinematics *sk, struct trapq *tq);
+        void itersolve_set_stepcompress(struct stepper_kinematics *sk
+            , struct stepcompress *sc, double step_dist);
+        double itersolve_calc_position_from_coord(struct stepper_kinematics *sk
+            , double a, double b);
+        void itersolve_set_position(struct stepper_kinematics *sk
+            , double a, double b);
+        double itersolve_get_commanded_pos(struct stepper_kinematics *sk);
+    """
+
+
+    defs_trapq = """
+        struct pull_move {
+            double print_time, move_t;
+            double start_v, accel;
+            double start_a, start_b;
+            double a_r, b_r;
+        };
+
+        struct trapq *trapq_alloc(void);
+        void trapq_free(struct trapq *tq);
+        void trapq_append(struct trapq *tq, double print_time
+            , double accel_t, double cruise_t, double decel_t
+            , double start_pos_a, double start_pos_b
+            , double axes_r_a, double axes_r_b
+            , double start_v, double cruise_v, double accel);
+        void trapq_finalize_moves(struct trapq *tq, double print_time
+            , double clear_history_time);
+        void trapq_set_position(struct trapq *tq, double print_time
+            , double pos_a, double pos_b);
+        int trapq_extract_old(struct trapq *tq, struct pull_move *p, int max
+            , double start_time, double end_time);
+    """
+    defs_kin_barba= """
+        struct stepper_kinematics *barba_stepper_alloc(char axis);
+    """
+
+
 
 defs_serialqueue = """
     #define MESSAGE_MAX 64
@@ -216,14 +264,20 @@ defs_pyhelper = """
 defs_std = """
     void free(void*);
 """
-
-defs_all = [
-    defs_pyhelper, defs_serialqueue, defs_std, defs_stepcompress,
-    defs_itersolve, defs_trapq, defs_trdispatch,
-    defs_kin_cartesian, defs_kin_corexy, defs_kin_corexz, defs_kin_delta,
-    defs_kin_deltesian, defs_kin_polar, defs_kin_rotary_delta, defs_kin_winch,
-    defs_kin_extruder, defs_kin_shaper, defs_kin_idex,
-]
+if xyz_coord_space:
+    defs_all = [
+        defs_pyhelper, defs_serialqueue, defs_std, defs_stepcompress,
+        defs_itersolve, defs_trapq, defs_trdispatch,
+        defs_kin_cartesian, defs_kin_corexy, defs_kin_corexz, defs_kin_delta,
+        defs_kin_deltesian, defs_kin_polar, defs_kin_rotary_delta, defs_kin_winch,
+        defs_kin_extruder, defs_kin_shaper, defs_kin_idex,
+    ]
+if ab_coord_space:
+    defs_all = [
+        defs_pyhelper, defs_serialqueue, defs_std, defs_stepcompress,
+        defs_itersolve, defs_trapq, defs_trdispatch,
+        defs_kin_barba,
+    ]
 
 # Update filenames to an absolute path
 def get_abs_files(srcdir, filelist):
