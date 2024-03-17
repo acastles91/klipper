@@ -6,6 +6,8 @@
 import math, logging, collections
 import chelper
 
+from coordinate_space_config import ab_coord_space, xyz_coord_space
+
 class error(Exception):
     pass
 

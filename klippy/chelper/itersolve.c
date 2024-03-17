@@ -13,6 +13,8 @@
 #include "stepcompress.h" // queue_append_start
 #include "trapq.h" // struct move
 
+#include "coordspace.h" // struct coord
+
 
 /****************************************************************
  * Main iterative solver
@@ -131,7 +133,7 @@ itersolve_gen_steps_range(struct stepper_kinematics *sk, struct move *m
 /****************************************************************
  * Interface functions
  ****************************************************************/
-
+#ifdef XYZ_COORDSPACE
 // Check if a move is likely to cause movement on a stepper
 static inline int
 check_active(struct stepper_kinematics *sk, struct move *m)
@@ -142,6 +144,19 @@ check_active(struct stepper_kinematics *sk, struct move *m)
             || (af & AF_Z && m->axes_r.z != 0.));
 }
 
+#endif
+
+#ifdef AB_COORDSPACE
+// Check if a move is likely to cause movement on a stepper
+static inline int
+check_active(struct stepper_kinematics *sk, struct move *m)
+{
+    int af = sk->active_flags;
+    return ((af & AF_A && m->axes_r.a != 0.)
+            || (af & AF_B && m->axes_r.b != 0.));
+}
+
+#endif
 // Generate step times for a range of moves on the trapq
 int32_t __visible
 itersolve_generate_steps(struct stepper_kinematics *sk, double flush_time)
@@ -230,6 +245,7 @@ itersolve_check_active(struct stepper_kinematics *sk, double flush_time)
     }
 }
 
+#ifdef XYZ_COORDSPACE
 // Report if the given stepper is registered for the given axis
 int32_t __visible
 itersolve_is_active_axis(struct stepper_kinematics *sk, char axis)
@@ -238,21 +254,6 @@ itersolve_is_active_axis(struct stepper_kinematics *sk, char axis)
         return 0;
     return (sk->active_flags & (AF_X << (axis - 'x'))) != 0;
 }
-
-void __visible
-itersolve_set_trapq(struct stepper_kinematics *sk, struct trapq *tq)
-{
-    sk->tq = tq;
-}
-
-void __visible
-itersolve_set_stepcompress(struct stepper_kinematics *sk
-                           , struct stepcompress *sc, double step_dist)
-{
-    sk->sc = sc;
-    sk->step_dist = step_dist;
-}
-
 double __visible
 itersolve_calc_position_from_coord(struct stepper_kinematics *sk
                                    , double x, double y, double z)
@@ -271,6 +272,52 @@ itersolve_set_position(struct stepper_kinematics *sk
                        , double x, double y, double z)
 {
     sk->commanded_pos = itersolve_calc_position_from_coord(sk, x, y, z);
+}
+#endif
+
+#ifdef AB_COORDSPACE
+
+// Report if the given stepper is registered for the given axis 
+int32_t __visible
+itersolve_is_active_axis(struct stepper_kinematics *sk, char axis)
+{
+    if (axis < 'a' || axis > 'b')
+        return 0;
+    return (sk->active_flags & (AF_A << (axis - 'a'))) != 0;
+}
+
+double __visible
+itersolve_calc_position_from_coord(struct stepper_kinematics *sk
+                                   , double a, double b)
+{
+    struct move m;
+    memset(&m, 0, sizeof(m));
+    m.start_pos.a = a;
+    m.start_pos.b = b;
+    m.move_t = 1000.;
+    return sk->calc_position_cb(sk, &m, 500.);
+}
+
+void __visible
+itersolve_set_position(struct stepper_kinematics *sk
+                       , double a, double b)
+{
+    sk->commanded_pos = itersolve_calc_position_from_coord(sk, a, b);
+}
+#endif
+
+void __visible
+itersolve_set_trapq(struct stepper_kinematics *sk, struct trapq *tq)
+{
+    sk->tq = tq;
+}
+
+void __visible
+itersolve_set_stepcompress(struct stepper_kinematics *sk
+                           , struct stepcompress *sc, double step_dist)
+{
+    sk->sc = sc;
+    sk->step_dist = step_dist;
 }
 
 double __visible

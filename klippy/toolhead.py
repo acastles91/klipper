@@ -365,17 +365,23 @@ class ToolHead:
         next_move_time = self.print_time
         for move in moves:
             if move.is_kinematic_move:
-                self.trapq_append(
-                    self.trapq, next_move_time,
-                    move.accel_t, move.cruise_t, move.decel_t,
-                    move.start_pos[0], move.start_pos[1], move.start_pos[2],
-                    move.axes_r[0], move.axes_r[1], move.axes_r[2],
-                    move.start_v, move.cruise_v, move.accel)
+                    if (xyz_coord_space):
+                        self.trapq_append(self.trapq, next_move_time,
+                                        move.accel_t, move.cruise_t, move.decel_t,
+                                        move.start_pos[0], move.start_pos[1], move.start_pos[2],
+                                        move.axes_r[0], move.axes_r[1], move.axes_r[2],
+                                        move.start_v, move.cruise_v, move.accel)
+                    if (ab_coord_space):
+                        self.trapq_append(self.trapq, next_move_time,
+                                        move.accel_t, move.cruise_t, move.decel_t,
+                                        move.start_pos[0], move.start_pos[1],
+                                        move.axes_r[0], move.axes_r[1],
+                                        move.start_v, move.cruise_v, move.accel)
+
             if (xyz_coord_space):
                 if move.axes_d[3]:
                     self.extruder.move(next_move_time, move)
-            next_move_time = (next_move_time + move.accel_t
-                              + move.cruise_t + move.decel_t)
+            next_move_time = (next_move_time + move.accel_t + move.cruise_t + move.decel_t)
             for cb in move.timing_callbacks:
                 cb(next_move_time)
         # Generate steps for moves
@@ -480,8 +486,13 @@ class ToolHead:
     def set_position(self, newpos, homing_axes=()):
         self.flush_step_generation()
         ffi_main, ffi_lib = chelper.get_ffi()
-        ffi_lib.trapq_set_position(self.trapq, self.print_time,
-                                   newpos[0], newpos[1], newpos[2])
+        ## AB Coord if statement
+        if (xyz_coord_space):
+            ffi_lib.trapq_set_position(self.trapq, self.print_time,
+                                       newpos[0], newpos[1], newpos[2])
+        if (ab_coord_space):
+            ffi_lib.trapq_set_position(self.trapq, self.print_time,
+                                       newpos[0], newpos[1])
         self.commanded_pos[:] = newpos
         self.kin.set_position(newpos, homing_axes)
         self.printer.send_event("toolhead:set_position")
