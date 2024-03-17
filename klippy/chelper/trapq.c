@@ -163,8 +163,7 @@ move_get_coord(struct move *m, double move_time)
 }
 
 // Fill and add a move to the trapezoid velocity queue
-void __visible
-trapq_append(struct trapq *tq, double print_time
+void trapq_append(struct trapq *tq, double print_time
              , double accel_t, double cruise_t, double decel_t
              , double start_pos_a, double start_pos_b
              , double axes_r_a, double axes_r_b
@@ -211,8 +210,7 @@ trapq_append(struct trapq *tq, double print_time
 }
 
 // Note a position change in the trapq history
-void __visible
-trapq_set_position(struct trapq *tq, double print_time
+void trapq_set_position(struct trapq *tq, double print_time
                    , double pos_a, double pos_b)
 {
     // Flush all moves from trapq

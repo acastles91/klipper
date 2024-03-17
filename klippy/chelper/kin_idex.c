@@ -79,3 +79,5 @@ dual_carriage_alloc(void)
     dc->m.move_t = 2. * DUMMY_T;
     return &dc->sk;
 }
+
+#endif
