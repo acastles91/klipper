@@ -4,6 +4,9 @@
 #include "list.h" // list_node
 #include "coordspace.h" // struct coord
 
+struct trapq {
+    struct list_head moves, history;
+};
 
 #ifdef XYZ_COORDSPACE
 struct coord {
@@ -68,9 +71,7 @@ struct move {
     struct list_node node;
 };
 
-struct trapq {
-    struct list_head moves, history;
-};
+
 
 
 struct move *move_alloc(void);
