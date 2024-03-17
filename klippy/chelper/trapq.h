@@ -2,7 +2,10 @@
 #define TRAPQ_H
 
 #include "list.h" // list_node
+#include "coordspace.h" // struct coord
 
+
+#ifdef XYZ_COORDSPACE
 struct coord {
     union {
         struct {
@@ -11,6 +14,51 @@ struct coord {
         double axis[3];
     };
 };
+void trapq_append(struct trapq *tq, double print_time
+                  , double accel_t, double cruise_t, double decel_t
+                  , double start_pos_x, double start_pos_y, double start_pos_z
+                  , double axes_r_x, double axes_r_y, double axes_r_z
+                  , double start_v, double cruise_v, double accel);
+
+void trapq_set_position(struct trapq *tq, double print_time
+                        , double pos_x, double pos_y, double pos_z);
+
+struct pull_move {
+    double print_time, move_t;
+    double start_v, accel;
+    double start_x, start_y, start_z;
+    double x_r, y_r, z_r;
+};
+
+#endif
+
+#ifdef AB_COORDSPACE
+struct coord {
+    union {
+        struct {
+            double a, b;
+        };
+        double axis[2];
+    };
+};
+
+void trapq_append(struct trapq *tq, double print_time
+                  , double accel_t, double cruise_t, double decel_t
+                  , double start_pos_a, double start_pos_b
+                  , double axes_r_a, double axes_r_b
+                  , double start_v, double cruise_v, double accel);
+
+void trapq_set_position(struct trapq *tq, double print_time
+                        , double pos_a, double pos_b);
+
+struct pull_move {
+    double print_time, move_t;
+    double start_v, accel;
+    double start_a, start_b;
+    double a_r, b_r;
+};
+
+#endif
 
 struct move {
     double print_time, move_t;
@@ -24,12 +72,6 @@ struct trapq {
     struct list_head moves, history;
 };
 
-struct pull_move {
-    double print_time, move_t;
-    double start_v, accel;
-    double start_x, start_y, start_z;
-    double x_r, y_r, z_r;
-};
 
 struct move *move_alloc(void);
 double move_get_distance(struct move *m, double move_time);
@@ -38,15 +80,8 @@ struct trapq *trapq_alloc(void);
 void trapq_free(struct trapq *tq);
 void trapq_check_sentinels(struct trapq *tq);
 void trapq_add_move(struct trapq *tq, struct move *m);
-void trapq_append(struct trapq *tq, double print_time
-                  , double accel_t, double cruise_t, double decel_t
-                  , double start_pos_x, double start_pos_y, double start_pos_z
-                  , double axes_r_x, double axes_r_y, double axes_r_z
-                  , double start_v, double cruise_v, double accel);
 void trapq_finalize_moves(struct trapq *tq, double print_time
                           , double clear_history_time);
-void trapq_set_position(struct trapq *tq, double print_time
-                        , double pos_x, double pos_y, double pos_z);
 int trapq_extract_old(struct trapq *tq, struct pull_move *p, int max
                       , double start_time, double end_time);
 

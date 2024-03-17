@@ -4,14 +4,17 @@
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import os, re, logging, collections, shlex
+from coordinate_space_config import ab_coord_space, xyz_coord_space
 
 class CommandError(Exception):
     pass
 
-Coord = collections.namedtuple('Coord', ('x', 'y', 'z', 'e'))
+if (xyz_coord_space):
+    Coord = collections.namedtuple('Coord', ('x', 'y', 'z', 'e'))
 
+if (ab_coord_space):
 # Modification for the AB abstract space
-AB_Coord = collections.namedtuple('AB_Coord', ('a', 'b'))
+    Coord = collections.namedtuple('AB_Coord', ('a', 'b'))
 #--------------------------------------------
 
 class GCodeCommand:
@@ -93,7 +96,6 @@ class GCodeCommand:
 class GCodeDispatch:
     error = CommandError
     Coord = Coord
-    AB_Coord = AB_Coord
     def __init__(self, printer):
         self.printer = printer
         self.is_fileinput = not not printer.get_start_args().get("debuginput")

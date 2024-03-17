@@ -5,6 +5,7 @@
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import math, logging, importlib
 import mcu, chelper, kinematics.extruder
+from coordinate_space_config import ab_coord_space, xyz_coord_space
 
 # Common suffixes: _d is distance (in mm), _v is velocity (in
 #   mm/second), _v2 is velocity squared (mm^2/s^2), _t is time (in
@@ -21,22 +22,39 @@ class Move:
         self.timing_callbacks = []
         velocity = min(speed, toolhead.max_velocity)
         self.is_kinematic_move = True
-        self.axes_d = axes_d = [end_pos[i] - start_pos[i] for i in (0, 1, 2, 3)]
-        self.move_d = move_d = math.sqrt(sum([d*d for d in axes_d[:3]]))
-        if move_d < .000000001:
-            # Extrude only move
-            self.end_pos = (start_pos[0], start_pos[1], start_pos[2],
-                            end_pos[3])
-            axes_d[0] = axes_d[1] = axes_d[2] = 0.
-            self.move_d = move_d = abs(axes_d[3])
-            inv_move_d = 0.
-            if move_d:
+        if (xyz_coord_space):
+            self.axes_d = axes_d = [end_pos[i] - start_pos[i] for i in (0, 1, 2, 3)]
+            self.move_d = move_d = math.sqrt(sum([d*d for d in axes_d[:3]]))
+            if move_d < .000000001:
+                # Extrude only move
+                self.end_pos = (start_pos[0], start_pos[1], start_pos[2],
+                                end_pos[3])
+                axes_d[0] = axes_d[1] = axes_d[2] = 0.
+                self.move_d = move_d = abs(axes_d[3])
+                inv_move_d = 0.
+                if move_d:
+                    inv_move_d = 1. / move_d
+                self.accel = 99999999.9
+                velocity = speed
+                self.is_kinematic_move = False
+            else:
                 inv_move_d = 1. / move_d
-            self.accel = 99999999.9
-            velocity = speed
-            self.is_kinematic_move = False
-        else:
-            inv_move_d = 1. / move_d
+        if (ab_coord_space):
+            self.axes_d = axes_d = [end_pos[i] - start_pos[i] for i in (0, 1)]
+            self.move_d = move_d = math.sqrt(sum([d*d for d in axes_d[:2]]))
+            if move_d < .000000001:
+                # Extrude only move
+                self.end_pos = (start_pos[0], start_pos[1])
+                axes_d[0] = axes_d[1] = 0.
+                self.move_d = move_d = abs(axes_d[2])
+                inv_move_d = 0.
+                if move_d:
+                    inv_move_d = 1. / move_d
+                self.accel = 99999999.9
+                velocity = speed
+                self.is_kinematic_move = False
+            else:
+                inv_move_d = 1. / move_d
         self.axes_r = [d * inv_move_d for d in axes_d]
         self.min_move_t = move_d / velocity
         # Junction speeds are tracked in velocity squared.  The
@@ -57,7 +75,11 @@ class Move:
         self.smooth_delta_v2 = min(self.smooth_delta_v2, self.delta_v2)
     def move_error(self, msg="Move out of range"):
         ep = self.end_pos
-        m = "%s: %.3f %.3f %.3f [%.3f]" % (msg, ep[0], ep[1], ep[2], ep[3])
+        if (xyz_coord_space):
+            m = "%s: %.3f %.3f %.3f [%.3f]" % (msg, ep[0], ep[1], ep[2], ep[3])
+        if (ab_coord_space):
+            m = "%s: %.3f %.3f" % (msg, ep[0], ep[1])
+            
         return self.toolhead.printer.command_error(m)
     def calc_junction(self, prev_move):
         if not self.is_kinematic_move or not prev_move.is_kinematic_move:
@@ -67,9 +89,13 @@ class Move:
         # Find max velocity using "approximated centripetal velocity"
         axes_r = self.axes_r
         prev_axes_r = prev_move.axes_r
-        junction_cos_theta = -(axes_r[0] * prev_axes_r[0]
-                               + axes_r[1] * prev_axes_r[1]
-                               + axes_r[2] * prev_axes_r[2])
+        if (xyz_coord_space): 
+            junction_cos_theta = -(axes_r[0] * prev_axes_r[0]
+                                   + axes_r[1] * prev_axes_r[1]
+                                   + axes_r[2] * prev_axes_r[2])
+        if (ab_coord_space):
+            junction_cos_theta = -(axes_r[0] * prev_axes_r[0]
+                                   + axes_r[1] * prev_axes_r[1])
         if junction_cos_theta > 0.999999:
             return
         junction_cos_theta = max(junction_cos_theta, -0.999999)
@@ -254,12 +280,10 @@ class ToolHead:
         # Create kinematics class
         gcode = self.printer.lookup_object('gcode')
         self.Coord = gcode.Coord
-# Modification for the AB abstract space
-        self.AB_Coord = gcode.AB_Coord
-#---------------------------------------
         self.extruder = kinematics.extruder.DummyExtruder(self.printer)
         kin_name = config.get('kinematics')
         logging.info("hola")
+
         try:
             logging.info('Here we are again')
             mod = importlib.import_module('kinematics.' + kin_name)
@@ -347,8 +371,9 @@ class ToolHead:
                     move.start_pos[0], move.start_pos[1], move.start_pos[2],
                     move.axes_r[0], move.axes_r[1], move.axes_r[2],
                     move.start_v, move.cruise_v, move.accel)
-            if move.axes_d[3]:
-                self.extruder.move(next_move_time, move)
+            if (xyz_coord_space):
+                if move.axes_d[3]:
+                    self.extruder.move(next_move_time, move)
             next_move_time = (next_move_time + move.accel_t
                               + move.cruise_t + move.decel_t)
             for cb in move.timing_callbacks:
@@ -466,8 +491,9 @@ class ToolHead:
             return
         if move.is_kinematic_move:
             self.kin.check_move(move)
-        if move.axes_d[3]:
-            self.extruder.check_move(move)
+        if (xyz_coord_space):
+            if move.axes_d[3]:
+                self.extruder.check_move(move)
         self.commanded_pos[:] = move.end_pos
         self.lookahead.add_move(move)
         if self.print_time > self.need_check_pause:
