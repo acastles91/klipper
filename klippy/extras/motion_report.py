@@ -6,6 +6,7 @@
 import logging
 import chelper
 from . import bulk_sensor
+from coordinate_space_config import ab_coord_space, xyz_coord_space
 
 # Extract stepper queue_step messages
 class DumpStepper:
@@ -140,11 +141,18 @@ class PrinterMotionReport:
         # get_status information
         self.next_status_time = 0.
         gcode = self.printer.lookup_object('gcode')
-        self.last_status = {
-            'live_position': gcode.Coord(0., 0., 0., 0.),
-            'live_velocity': 0., 'live_extruder_velocity': 0.,
-            'steppers': [], 'trapq': [],
-        }
+        if (xyz_coord_space):
+            self.last_status = {
+                'live_position': gcode.Coord(0., 0., 0., 0.),
+                'live_velocity': 0., 'live_extruder_velocity': 0.,
+                'steppers': [], 'trapq': [],
+            }
+        if (ab_coord_space):
+            self.last_status = {
+                'live_position': gcode.Coord(0., 0.),
+                'live_velocity': 0.,
+                'steppers': [], 'trapq': [],
+            }
         # Register handlers
         self.printer.register_event_handler("klippy:connect", self._connect)
         self.printer.register_event_handler("klippy:shutdown", self._shutdown)
