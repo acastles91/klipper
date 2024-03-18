@@ -13,7 +13,7 @@ class Barba:
         self.toolhead1_motors = [stepper.LookupMultiRail(config.getsection('stepper_' + n)) 
                                 for n in 'ab']
         for rail, axis in zip(self.toolhead1_motors, 'ab'):
-            rail.setup_itersolve('cartesian_stepper_alloc', axis.encode())
+            rail.setup_itersolve('barba_stepper_alloc', axis.encode())
         
         ranges = [r.get_range() for r in self.toolhead1_motors]
         self.axes_min = toolhead.AB_Coord(*[r[0] for r in ranges])

@@ -1,0 +1,25 @@
+In file included from /home/biqu/klipper/klippy/chelper/trapq.c:12:
+/home/biqu/klipper/klippy/chelper/trapq.h:45:26: warning: ‘struct trapq’ declared inside parameter list will not be visible outside of this definition or declaration
+   45 | void trapq_append(struct trapq *tq, double print_time
+      |                          ^~~~~
+/home/biqu/klipper/klippy/chelper/trapq.h:51:32: warning: ‘struct trapq’ declared inside parameter list will not be visible outside of this definition or declaration
+   51 | void trapq_set_position(struct trapq *tq, double print_time
+      |                                ^~~~~
+/home/biqu/klipper/klippy/chelper/trapq.c:167:1: error: conflicting types for ‘trapq_append’
+  167 | trapq_append(struct trapq *tq, double print_time
+      | ^~~~~~~~~~~~
+In file included from /home/biqu/klipper/klippy/chelper/trapq.c:12:
+/home/biqu/klipper/klippy/chelper/trapq.h:45:6: note: previous declaration of ‘trapq_append’ was here
+   45 | void trapq_append(struct trapq *tq, double print_time
+      |      ^~~~~~~~~~~~
+/home/biqu/klipper/klippy/chelper/trapq.c:215:1: error: conflicting types for ‘trapq_set_position’
+  215 | trapq_set_position(struct trapq *tq, double print_time
+      | ^~~~~~~~~~~~~~~~~~
+In file included from /home/biqu/klipper/klippy/chelper/trapq.c:12:
+/home/biqu/klipper/klippy/chelper/trapq.h:51:6: note: previous declaration of ‘trapq_set_position’ was here
+   51 | void trapq_set_position(struct trapq *tq, double print_time
+      |      ^~~~~~~~~~~~~~~~~~
+/home/biqu/klipper/klippy/chelper/kin_idex.c:6: error: unterminated #ifdef
+    6 | #ifdef XYZ_COORDSPACE
+      |
+ERROR:root:Unable to build C code module (error=256)
