@@ -19,6 +19,7 @@ COMPILE_ARGS = ("-Wall -g -O2 -shared -fPIC"
 SSE_FLAGS = "-mfpmath=sse -msse2"
 
 if xyz_coord_space:
+    COMPILE_ARGS += " -DXYZ_COORDSPACE"
     SOURCE_FILES = [
         'pyhelper.c', 'serialqueue.c', 'stepcompress.c', 'itersolve.c', 'trapq.c',
         'pollreactor.c', 'msgblock.c', 'trdispatch.c',
@@ -27,6 +28,7 @@ if xyz_coord_space:
         'kin_extruder.c', 'kin_shaper.c', 'kin_idex.c',
     ]
 if ab_coord_space:
+    COMPILE_ARGS += " -DAB_COORDSPACE"
     SOURCE_FILES = [
         'pyhelper.c', 'serialqueue.c', 'stepcompress.c', 'itersolve.c', 'trapq.c',
         'pollreactor.c', 'msgblock.c', 'trdispatch.c',

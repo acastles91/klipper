@@ -14,14 +14,14 @@
 #ifdef AB_COORDSPACE
 
 static double
-cart_stepper_a_calc_position(struct stepper_kinematics *sk, struct move *m
+barba_stepper_a_calc_position(struct stepper_kinematics *sk, struct move *m
                              , double move_time)
 {
     return move_get_coord(m, move_time).a;
 }
 
 static double
-cart_stepper_b_calc_position(struct stepper_kinematics *sk, struct move *m
+barba_stepper_b_calc_position(struct stepper_kinematics *sk, struct move *m
                              , double move_time)
 {
     return move_get_coord(m, move_time).b;
@@ -29,15 +29,15 @@ cart_stepper_b_calc_position(struct stepper_kinematics *sk, struct move *m
 
 
 struct stepper_kinematics * __visible
-cartesian_stepper_alloc(char axis)
+barba_stepper_alloc(char axis)
 {
     struct stepper_kinematics *sk = malloc(sizeof(*sk));
     memset(sk, 0, sizeof(*sk));
     if (axis == 'a') {
-        sk->calc_position_cb = cart_stepper_a_calc_position;
+        sk->calc_position_cb = barba_stepper_a_calc_position;
         sk->active_flags = AF_A;
     } else if (axis == 'b') {
-        sk->calc_position_cb = cart_stepper_b_calc_position;
+        sk->calc_position_cb = barba_stepper_b_calc_position;
         sk->active_flags = AF_B;
     }
         return sk;
