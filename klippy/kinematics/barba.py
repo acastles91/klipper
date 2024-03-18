@@ -16,8 +16,8 @@ class Barba:
             rail.setup_itersolve('barba_stepper_alloc', axis.encode())
         
         ranges = [r.get_range() for r in self.toolhead1_motors]
-        self.axes_min = toolhead.AB_Coord(*[r[0] for r in ranges])
-        self.axes_max = toolhead.AB_Coord(*[r[1] for r in ranges])
+        self.axes_min = toolhead.Coord(*[r[0] for r in ranges])
+        self.axes_max = toolhead.Coord(*[r[1] for r in ranges])
 
         for s in self.get_steppers():
                     s.set_trapq(toolhead.get_trapq())
