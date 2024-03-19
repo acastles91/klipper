@@ -1,4 +1,4 @@
-// Cartesian kinematics stepper pulse time generation
+// Barba kinematics stepper pulse time generation
 //
 // Copyright (C) 2018-2019  Kevin O'Connor <kevin@koconnor.net>
 //

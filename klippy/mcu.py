@@ -743,7 +743,9 @@ class MCU:
             ffi_lib.steppersync_free)
         ffi_lib.steppersync_set_time(self._steppersync, 0., self._mcu_freq)
         # Log config information
+        logging.info("Aquí")
         move_msg = "Configured MCU '%s' (%d moves)" % (self._name, move_count)
+        logging.info("Hola")
         logging.info(move_msg)
         log_info = self._log_info() + "\n" + move_msg
         self._printer.set_rollover_info(self._name, log_info, log=False)

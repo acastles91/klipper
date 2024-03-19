@@ -5,6 +5,7 @@
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import logging, math, json, collections
 from . import probe
+from coordinate_space_config import ab_coord_space, xyz_coord_space
 
 PROFILE_VERSION = 1
 PROFILE_OPTIONS = {
@@ -89,6 +90,7 @@ class BedMesh:
         self.printer = config.get_printer()
         self.printer.register_event_handler("klippy:connect",
                                             self.handle_connect)
+
         self.last_position = [0., 0., 0., 0.]
         self.bmc = BedMeshCalibrate(config, self)
         self.z_mesh = None
