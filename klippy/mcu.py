@@ -743,7 +743,7 @@ class MCU:
             ffi_lib.steppersync_free)
         ffi_lib.steppersync_set_time(self._steppersync, 0., self._mcu_freq)
         # Log config information
-        logging.info("Aquí")
+        logging.info("Aqui")
         move_msg = "Configured MCU '%s' (%d moves)" % (self._name, move_count)
         logging.info("Hola")
         logging.info(move_msg)
