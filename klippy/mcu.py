@@ -745,10 +745,10 @@ class MCU:
         # Log config information
         logging.info("Aqui")
         move_msg = "Configured MCU '%s' (%d moves)" % (self._name, move_count)
-        logging.info("Hola")
         logging.info(move_msg)
         log_info = self._log_info() + "\n" + move_msg
         self._printer.set_rollover_info(self._name, log_info, log=False)
+        logging.info("Hola")
     def _mcu_identify(self):
         if self.is_fileoutput():
             self._connect_file()
