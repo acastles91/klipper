@@ -4,6 +4,7 @@
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import logging, math
+from coordinate_space_config import ab_coord_space, xyz_coord_space
 
 HOMING_START_DELAY = 0.001
 ENDSTOP_SAMPLE_TIME = .000015
@@ -312,23 +313,25 @@ class PrinterHoming:
         # Move to origin
         axes = []
         ## Altering for Barba ## for pos, axis in enumerate('XYZ'):
-        for pos, axis in enumerate('AB'):
-            gcmd.respond_info('still here')
-            if gcmd.get(axis, None) is not None:
-                axes.append(pos)
-        if not axes:
-            gcmd.respond_info('and here')
-            ## axes = [0, 1, 2]
-            axes = [0, 1]
+        if (xyz_coord_space):
+            for pos, axis in enumerate('XYZ'):
+                if gcmd.get(axis, None) is not None:
+                    axes.append(pos)
+            if not axes:
+                 axes = [0, 1, 2]
+        if (ab_coord_space):
+            for pos, axis in enumerate('AB'):
+                if gcmd.get(axis, None) is not None:
+                    axes.append(pos)
+            if not axes:
+                    axes = [0, 1]
         homing_state = Homing(self.printer)
         homing_state.set_axes(axes)
         kin = self.printer.lookup_object('toolhead').get_kinematics()
         logging.info('log set_axes = ' + str(len(axes)))
         logging.info("log kin = " +  str(kin))
         try:
-            logging.info('and here I hope, in the log?')
             kin.home(homing_state) ##This is where the failure happens
-            gcmd.respond_info('did this go through?')
         except self.printer.command_error:
             if self.printer.is_shutdown():
                 raise self.printer.command_error(
@@ -336,7 +339,6 @@ class PrinterHoming:
             self.printer.lookup_object('stepper_enable').motor_off()
             raise
 
-        gcmd.respond_info('end of function')
 
 def load_config(config):
     return PrinterHoming(config)
